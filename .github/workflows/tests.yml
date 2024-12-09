@@ -1,4 +1,4 @@
-name: Tests
+name: Playwright Tests
 
 on:
   push:
@@ -10,32 +10,31 @@ on:
 
 jobs:
   test:
-    timeout-minutes: 60
     runs-on: ubuntu-latest
+    timeout-minutes: 60
+
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
           node-version: 20
       - name: Clear npm cache
         run: npm cache clean --force
-      - name: Clear Playwright cache
-        run: rm -rf /home/runner/.cache/ms-playwright
       - name: Install dependencies
         run: npm install
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
-      - name: Verify Playwright installation
+      - name: Verify Playwright browsers cache
         run: ls -la /home/runner/.cache/ms-playwright
-      - name: Update Browserslist database
-        run: npx update-browserslist-db@latest
-      - name: Get testing lib
-        run: set -eu && git clone https://github.com/Yandex-Practicum/tests-blog-customizer.git /tmp/tests-blog-customizer
-      - name: Run tests
-        run: DEBUG=pw:api bash /tmp/tests-blog-customizer/run.sh
+      - name: Run Playwright tests
+        run: npx playwright test
+        env:
+          CI: true
       - uses: actions/upload-artifact@v3
         if: always()
         with:
-          name: report
-          path: /tmp/tests-blog-customizer/tmp/artifacts
-          retention-days: 30
+          name: test-report
+          path: playwright-report/
+          retention-days: 7
