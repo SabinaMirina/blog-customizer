@@ -17,14 +17,22 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 20
+      - name: Clear npm cache
+        run: npm cache clean --force
       - name: Install dependencies
         run: npm install
+      - name: Clear Playwright cache
+        run: rm -rf /home/runner/.cache/ms-playwright
       - name: Install Playwright browsers
         run: npx playwright install
+      - name: Verify Playwright installation
+        run: ls -la /home/runner/.cache/ms-playwright
+      - name: Wait for server to start
+        run: sleep 10
       - name: Get testing lib
         run: set -eu && git clone https://github.com/Yandex-Practicum/tests-blog-customizer.git /tmp/tests-blog-customizer
       - name: Run tests
-        run: bash /tmp/tests-blog-customizer/run.sh
+        run: DEBUG=pw:api bash /tmp/tests-blog-customizer/run.sh
       - uses: actions/upload-artifact@v3
         if: always()
         with:
