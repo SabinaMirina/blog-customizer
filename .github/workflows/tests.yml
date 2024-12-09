@@ -24,11 +24,11 @@ jobs:
       - name: Clear Playwright cache
         run: rm -rf /home/runner/.cache/ms-playwright
       - name: Install Playwright browsers
-        run: npx playwright install
+        run: npx playwright install --with-deps
       - name: Verify Playwright installation
         run: ls -la /home/runner/.cache/ms-playwright
-      - name: Wait for server to start
-        run: sleep 10
+      - name: Update Browserslist database
+        run: npx update-browserslist-db@latest
       - name: Get testing lib
         run: set -eu && git clone https://github.com/Yandex-Practicum/tests-blog-customizer.git /tmp/tests-blog-customizer
       - name: Run tests
