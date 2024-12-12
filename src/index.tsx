@@ -1,5 +1,5 @@
 import { createRoot } from 'react-dom/client';
-import { StrictMode, CSSProperties } from 'react';
+import { StrictMode, CSSProperties, useState } from 'react';
 import clsx from 'clsx';
 
 import { Article } from './components/article/Article';
@@ -13,19 +13,40 @@ const domNode = document.getElementById('root') as HTMLDivElement;
 const root = createRoot(domNode);
 
 const App = () => {
+	// Состояние для хранения текущих настроек
+	const [articleSettings, setArticleSettings] = useState({
+		fontFamily: defaultArticleState.fontFamilyOption.value,
+		fontSize: defaultArticleState.fontSizeOption.value,
+		fontColor: defaultArticleState.fontColor.value,
+		containerWidth: defaultArticleState.contentWidth.value,
+		bgColor: defaultArticleState.backgroundColor.value,
+	});
+
+	// Функция для обновления настроек (вызывается из ArticleParamsForm)
+	const handleApplySettings = (settings: {
+		fontFamily: string;
+		fontSize: string;
+		fontColor: string;
+		containerWidth: string;
+		bgColor: string;
+	}) => {
+		setArticleSettings(settings);
+	};
+
 	return (
 		<main
 			className={clsx(styles.main)}
 			style={
 				{
-					'--font-family': defaultArticleState.fontFamilyOption.value,
-					'--font-size': defaultArticleState.fontSizeOption.value,
-					'--font-color': defaultArticleState.fontColor.value,
-					'--container-width': defaultArticleState.contentWidth.value,
-					'--bg-color': defaultArticleState.backgroundColor.value,
+					'--font-family': articleSettings.fontFamily,
+					'--font-size': articleSettings.fontSize,
+					'--font-color': articleSettings.fontColor,
+					'--container-width': articleSettings.containerWidth,
+					'--bg-color': articleSettings.bgColor,
 				} as CSSProperties
 			}>
-			<ArticleParamsForm />
+			{/* Передаем handleApplySettings в ArticleParamsForm */}
+			<ArticleParamsForm onApplySettings={handleApplySettings} />
 			<Article />
 		</main>
 	);

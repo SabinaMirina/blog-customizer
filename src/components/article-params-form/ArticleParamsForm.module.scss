@@ -16,6 +16,7 @@
 	display: flex;
 	flex-shrink: 0;
 	flex-direction: column;
+	gap: 24px; /* Основной интервал между элементами */
 	box-sizing: border-box;
 	width: 616px;
 	height: auto;
@@ -25,8 +26,36 @@
 	border-right: 1px solid #000000;
 }
 
+.form > * {
+	margin-bottom: 24px; /* Расстояние между всеми элементами формы */
+}
+
+.form > .radioGroup,
+.form > .select {
+	margin-bottom: 32px; /* Для большего интервала между выпадающими списками */
+}
+
 .bottomContainer {
 	display: flex;
 	justify-content: space-between;
 	margin-top: auto;
+	padding-top: 32px; /* Отступ перед кнопками */
+}
+
+.radioGroup {
+	display: flex;
+	gap: 16px; /* Расстояние между радиокнопками */
+}
+
+.radioGroup > * {
+	padding: 8px 16px;
+	text-align: center;
+	border: 1px solid #000000;
+	border-radius: 4px;
+	cursor: pointer;
+}
+
+.radioGroup > .selected {
+	color: #000000;
+	background-color: #ffc800; /* Жёлтая подсветка для выбранного */
 }
