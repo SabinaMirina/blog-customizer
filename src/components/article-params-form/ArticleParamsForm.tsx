@@ -15,6 +15,7 @@ import {
 import styles from './ArticleParamsForm.module.scss';
 import { useState, useEffect, useRef } from 'react';
 import { RadioGroup } from 'src/ui/radio-group';
+import clsx from 'clsx';
 
 type ArticleParamsFormProps = {
 	onApplySettings: (settings: {
@@ -55,14 +56,12 @@ export const ArticleParamsForm = ({
 		contentWidth: defaultArticleState.contentWidth,
 	});
 
-	const [isOpen, setIsOpen] = useState(false);
+	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const sidebarRef = useRef<HTMLDivElement>(null);
 
 	// применение настроек
 	const handleApply = (e: React.FormEvent) => {
 		e.preventDefault();
-
-		// передача настроек в App
 		onApplySettings({
 			fontFamily: fontFamily.value,
 			fontSize: fontSize.value,
@@ -70,8 +69,7 @@ export const ArticleParamsForm = ({
 			containerWidth: contentWidth.value,
 			bgColor: backgroundColor.value,
 		});
-
-		setIsOpen(false); // Закрыть сайдбар
+		setIsMenuOpen(false);
 	};
 
 	// Сброс настроек
@@ -94,12 +92,14 @@ export const ArticleParamsForm = ({
 
 	// Закрыть сайдбар при клике вне его
 	useEffect(() => {
+		if (!isMenuOpen) return;
+
 		const handleClickOutside = (event: MouseEvent) => {
 			if (
 				sidebarRef.current &&
 				!sidebarRef.current.contains(event.target as Node)
 			) {
-				setIsOpen(false); // Закрть сайдбар
+				setIsMenuOpen(false);
 			}
 		};
 
@@ -107,86 +107,76 @@ export const ArticleParamsForm = ({
 		return () => {
 			document.removeEventListener('mousedown', handleClickOutside);
 		};
-	}, []);
+	}, [isMenuOpen]);
 
 	return (
 		<>
-			<ArrowButton isOpen={isOpen} onClick={() => setIsOpen((prev) => !prev)} />
-			{isOpen && (
-				<aside
-					className={`${styles.container} ${
-						isOpen ? styles.container_open : ''
-					}`}
-					ref={sidebarRef}>
-					<form className={styles.form} onSubmit={handleApply}>
-						{/* Заголовок */}
-						<Text
-							as='h2'
-							size={31}
-							weight={800}
-							align='left'
-							family='open-sans'>
-							Задайте параметры
-						</Text>
-
-						{/* списк для выбора шрифта */}
-						<Select
-							title='Шрифт'
-							options={fontFamilyOptions}
-							selected={fontFamily}
-							placeholder='Выберите шрифт'
-							onChange={(option) => setFontFamily(option)}
+			<ArrowButton
+				isOpen={isMenuOpen}
+				onClick={() => setIsMenuOpen((prev) => !prev)}
+			/>
+			<aside
+				className={clsx(styles.container, {
+					[styles.container_open]: isMenuOpen,
+				})}
+				ref={sidebarRef}>
+				<form className={styles.form} onSubmit={handleApply}>
+					{/* Заголовок */}
+					<Text as='h2' size={31} weight={800} align='left' family='open-sans'>
+						Задайте параметры
+					</Text>
+					{/* списк для выбора шрифта */}
+					<Select
+						title='Шрифт'
+						options={fontFamilyOptions}
+						selected={fontFamily}
+						placeholder='Выберите шрифт'
+						onChange={(option) => setFontFamily(option)}
+					/>
+					{/* Выбор размера шрифта */}
+					<RadioGroup
+						title='Размер шрифта'
+						name='fontSize'
+						options={fontSizeOptions}
+						selected={fontSize}
+						onChange={(option) => setFontSize(option)}
+					/>
+					{/* выбора цвета текста */}
+					<Select
+						title='Цвет текста'
+						options={fontColors}
+						selected={fontColor}
+						placeholder='Выберите цвет'
+						onChange={(option) => setFontColor(option)}
+					/>
+					{/* Выбора цвета фона */}
+					<Select
+						title='Цвет фона'
+						options={backgroundColors}
+						selected={backgroundColor}
+						placeholder='Выберите цвет'
+						onChange={(option) => setBackgroundColor(option)}
+					/>
+					{/* Выбор ширины контента */}
+					<Select
+						title='Ширина контента'
+						options={contentWidthArr}
+						selected={contentWidth}
+						placeholder='Выберите ширину'
+						onChange={(option) => setContentWidth(option)}
+					/>
+					{/* Кнопки сброса и применения */}
+					<div className={styles.bottomContainer}>
+						<Button
+							title='Сбросить'
+							htmlType='button'
+							type='clear'
+							onClick={handleReset}
 						/>
-
-						{/* Выбор размера шрифта */}
-						<RadioGroup
-							title='Размер шрифта'
-							name='fontSize'
-							options={fontSizeOptions}
-							selected={fontSize}
-							onChange={(option) => setFontSize(option)}
-						/>
-
-						{/* выбора цвета текста */}
-						<Select
-							title='Цвет текста'
-							options={fontColors}
-							selected={fontColor}
-							placeholder='Выберите цвет'
-							onChange={(option) => setFontColor(option)}
-						/>
-
-						{/* Выбора цвета фона */}
-						<Select
-							title='Цвет фона'
-							options={backgroundColors}
-							selected={backgroundColor}
-							placeholder='Выберите цвет'
-							onChange={(option) => setBackgroundColor(option)}
-						/>
-
-						{/* Выбор ширины контента */}
-						<Select
-							title='Ширина контента'
-							options={contentWidthArr}
-							selected={contentWidth}
-							placeholder='Выберите ширину'
-							onChange={(option) => setContentWidth(option)}
-						/>
-
-						{/* Кнопки сброса и применения */}
-						<div className={styles.bottomContainer}>
-							<Button
-								title='Сбросить'
-								htmlType='button'
-								type='clear'
-								onClick={handleReset}
-							/>
-							<Button title='Применить' htmlType='submit' type='apply' />
-						</div>
-					</form>
-				</aside>
-			)}
+						<Button title='Применить' htmlType='submit' type='apply' />
+					</div>
+				</form>
+			</aside>
 		</>
 	);
 };
